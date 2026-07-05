@@ -1,0 +1,25 @@
+Lazarescu Matei Cristian 323CC
+Am revolvat toate cerintele
+
+Verific daca am primit un pachet cu protocol incapsulat IP,
+apoi verific destinatia, daca routerul este destinatia, trimit un ICMP
+mesaj "Echo reply". Daca destinatia nu este routerul, continui si verific
+checksum. Daca checksum-ul e gresit arunc pachetul, daca e bun continui si 
+verific TTL. Daca TTL-ul nu e bun trimit un ICMP mesaj de tip 
+"Time exceeded". Daca e bun TTL, il scad cu o unitate. Folosesc o trie pe biti
+ca sa fac eficient LPM. Daca nu gasesc in TRIE destinatia trimit un ICMP mesaj
+"Destination Unreachable". Daca gasesc destinatia ip recalculez ttl. Modific
+in ether headerul pachetului adresa mac sursa si caut in cache, next_hop ip.
+Daca il gasesc, actualizez adresa mac destinatie din ether header. Daca nu
+il gasesc, introduc pachetul intr-o lista de asteptare si trimit un ARP 
+request cu adresa mac destinatie broadcast.
+
+Daca routerul primeste un pachet cu un protocol incapsulat ARP, 
+verific daca am primit un ARP request si daca ARP Requestul este 
+destinat routerului respectiv
+(target proto address == ip interface). Daca da, trimit
+un ARP reply cu adresa MAC a interfetei pe care am primit pachetul.
+Daca primesc un ARP REPLY, verific daca adresa MAC returnata nu este
+deja bagata in cache. Daca nu, o adaug in cache, iar apoi trimit pachetele
+din lista al caror next_hop ip corespunde cu ip-ul de unde a venit
+ARP replyul.
